@@ -84,20 +84,26 @@ def main():
     
     # sample data (np.array)
     Rn, Re, edge_index, target = Rn_T.detach().cpu().numpy(), Re_T.detach().cpu().numpy(), edge_index_T.detach().cpu().numpy(), target_T.detach().cpu().numpy()
-    edge_index = edge_index.astype(np.int32)
+    edge_index = np.transpose(edge_index).astype(np.int32)
     
     # sample data (np.1D-array)
     Re_1D = np.reshape(Re, newshape = (Re.shape[0]*Re.shape[1]))
     Rn_1D = np.reshape(Rn, newshape = (Rn.shape[0]*Rn.shape[1]))
     edge_index_1D = np.reshape(edge_index, newshape=(edge_index.shape[0]*edge_index.shape[1])).astype(np.int32)
     hls_pred_noact = np.zeros(shape=(torch_pred.shape[0],)).astype(np.float32) # <--output of hls_model sent here, noact = noactivation
-    
+
+    os.makedirs('tb_data',exist_ok=True)
+    np.savetxt('tb_data/input_edge_data.dat', Re_1D.reshape(1, -1), fmt='%f', delimiter=' ')
+    np.savetxt('tb_data/input_node_data.dat', Rn_1D.reshape(1, -1), fmt='%f', delimiter=' ')
+    np.savetxt('tb_data/input_edge_index.dat', edge_index_1D.reshape(1, -1), fmt='%f', delimiter=' ')
+    np.savetxt('tb_data/output_predictions.dat', torch_pred.reshape(1, -1), fmt='%f', delimiter=' ')
+
     # define ctypes
     Re_ctype = ctypes.POINTER(ctypes.ARRAY(ctypes.c_float,len(Re_1D)))
     Rn_ctype = ctypes.POINTER(ctypes.ARRAY(ctypes.c_float,len(Rn_1D)))
     edge_index_ctype = ctypes.POINTER(ctypes.ARRAY(ctypes.c_float,len(edge_index_1D)))
-    hls_pred_ctype = ctypes.POINTER(ctypes.ARRAY(ctypes.c_float,len(hls_pred_noact)))
-    
+    hls_pred_ctype = ctypes.POINTER(ctypes.ARRAY(ctypes.c_float,len(hls_pred_noact)))    
+
     # sample data (C-arrays)
     Re_c = Re_1D.ctypes.data_as(Re_ctype)
     Rn_c = Rn_1D.ctypes.data_as(Rn_ctype)

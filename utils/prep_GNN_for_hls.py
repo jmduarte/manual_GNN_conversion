@@ -23,7 +23,7 @@ def prep_GNN_for_hls(model):
     "project_name": "myproject",
     "fpga_part": 'xcku115-flvb2104-2-i',
     "clock_period": 5,
-    "io_type": "io_parallel"
+    "io_type": "io_parallel",
     }
     config = create_vivado_config(**config)
     config['PytorchModel'] = model
@@ -35,7 +35,11 @@ def prep_GNN_for_hls(model):
     model_config = {
     'Precision': 'ap_fixed<16,6>',
     'ReuseFactor': 1,
-    'Strategy': 'Latency'
+    'Strategy': 'Latency',
+    "InputEdgeData": "tb_data/input_edge_data.dat",
+    "InputNodeData": "tb_data/input_node_data.dat",
+    "InputEdgeIndex": "tb_data/input_edge_index.dat",
+    "OutputPredictions": "tb_data/output_predictions.dat",
     }
 
     config['HLSConfig']['Model'] = model_config
