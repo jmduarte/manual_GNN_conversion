@@ -12,7 +12,7 @@ if __name__=="__main__":
     n_edges = []
     n_nodes = []
 
-    graph_indir = 'trackml_data/processed_plus_pyg_small'
+    graph_indir = 'trackml_data/geometric_2GeV_phi0003_z275_train_1'
 
     graph_files = np.array(os.listdir(graph_indir))
     graph_files = np.array([os.path.join(graph_indir, graph_file)
